@@ -5,6 +5,7 @@ import { connection_db } from "./lib/db.js";
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT;
+app.use(express.json());
 app.use('/api/auth' , auth)
 app.listen(PORT,
     ()=>{
