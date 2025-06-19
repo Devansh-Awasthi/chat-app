@@ -4,6 +4,9 @@ import { generator } from "../utils/jwt.generator.js";
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
   try {
+    if(!name || !email || !password) {
+      return res.status(400).json({ message: "All Fields are required" });
+    }
     if (password.length < 8) {
       return res.status(400).json({ message: "password must be > 8" });
     }
@@ -22,7 +25,7 @@ export const signup = async (req, res) => {
       //Jwt Gen
       generator(newUser._id, res);
       await newUser.save();
-      res.status(500).json({
+      res.status(201).json({
         _id:newUser._id,
         email: newUser.email,
       name: newUser.name,
@@ -32,16 +35,46 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "wrong Information" });
     }
   } catch (error) {
-        console.log('Internal sever Error:', error);
+        console.log('Internal sever in Sign Up:', error);
       return res.status(500).json({ message: "Internal Server Error" });
     //   return res.status(400).json({ message: "wrong Information" });
   }
 
 };
 
-export const login = (req, res) => {
-  res.send("login");
+export const login =async (req, res) => {
+  const {email,password} = req.body;
+  try {
+    const userLogin  =await User.findOne({email});
+    if(!userLogin){
+      res.status(500).json({message:'Invalid information'});
+    }
+    const isPassCorrect =await bcrypt.compare(password,userLogin.password);
+    if(!isPassCorrect) {
+      res.status(500).json({message:'Invalid information'});
+    }
+    generator(userLogin._id,res)
+    res.status(200).json({
+        _id:userLogin._id,
+        email: userLogin.email,
+        name: userLogin.name,
+        profilePic:userLogin.profilePic
+    });
+    
+  } catch (error) {
+            console.log('Internal sever Log IN:', error);
+      return res.status(500).json({ message: "Internal Server Error" });
+  }
 };
 export const logout = (req, res) => {
-  res.send("logout");
+  try{
+    res.cookie('JWTtoken' , '' , {maxAge:0})
+    res.status(200).json({
+          message:'logged Out'
+    })
+  }
+ catch(e){
+      console.log('Internal sever Error in Logout:', e);
+      res.status(500).json({message:'An Error Occured'});
+ }
 };
