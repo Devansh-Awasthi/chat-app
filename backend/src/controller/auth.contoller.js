@@ -78,3 +78,6 @@ export const logout = (req, res) => {
       res.status(500).json({message:'An Error Occured'});
  }
 };
+export const profileUpdate = async(req, res) =>{
+
+}  
