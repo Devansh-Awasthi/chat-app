@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
-import User from '../model/db.user';
+import User from '../model/db.user.js';
 
 
 export const checkProtect = async(req,res,next) =>{
-    const token = req.cookie.JWTtoken
+    const token = req.cookies.JWTtoken
     try{
         if(!token) {
             //error
@@ -14,11 +14,12 @@ export const checkProtect = async(req,res,next) =>{
             //error
             return res.status(401).json({message:'Invalid Token'})
         }
-        const userInfo =await User.findById(isCorrect.userId).select('-password');
+        // console.log(isCorrect.id)
+        const userInfo =await User.findById(isCorrect.id).select('-password');
     if(!userInfo){
             return res.status(401).json({message:'User Not Found'});
     }
-    req.user = isCorrect
+    req.user = userInfo
     next(); 
     }
     catch(error){

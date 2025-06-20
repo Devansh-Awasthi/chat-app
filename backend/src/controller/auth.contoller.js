@@ -1,6 +1,7 @@
 import User from "../model/db.user.js";
 import bcrypt from "bcryptjs";
 import { generator } from "../utils/jwt.generator.js";
+import cloudinary from "../lib/cloudinary.js";
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -79,5 +80,35 @@ export const logout = (req, res) => {
  }
 };
 export const profileUpdate = async(req, res) =>{
+  try {
+    const user = req.user._id;
+    const {profilePic} = req.body;
+    if(!profilePic) {
+            res.status(400).json({message:'Profile Pic is required'});
+    }
+    const uploadResponse =await cloudinary.uploader.upload(profilePic);
+    const updatedResponse =await User.findByIdAndUpdate(user,
+      {
+        profilePic:uploadResponse.secure_url
+      },
+      {
+      new:true
+    })
+  } catch (error) {
+      console.log('Internal sever Error in profileUpdate:', error);
+      res.status(500).json({message:'An Error Occured'});
+ 
+  }
 
 }  
+export const checkAuth = (req, res)=>{
+try {
+  res.status(200).json(
+    req.user
+  )
+} catch (error) {
+       console.log('Internal sever Error in check:', error);
+      res.status(500).json({message:'An Error Occured'});
+ 
+}
+}
