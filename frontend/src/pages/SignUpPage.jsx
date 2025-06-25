@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useAuthStore } from "../store/userAuthStore";
-import { MessageSquare } from "lucide-react";
-
+import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User } from "lucide-react";
+import {Link} from 'react-router-dom'
+import Pattern from "../components/Pattern.jsx";
+import toast from "react-hot-toast";
 function SignUpPage() {
   const [showPassword, setshowPassword] = useState(false);
   const [formData, setformData] = useState({
@@ -12,8 +14,22 @@ function SignUpPage() {
   const signup = useAuthStore((state) => state.signup);
   const isSigningUp = useAuthStore((state) => state.isSigningUp);
 
-  const validateForm = () => {};
-  const handelSubmit = (e) => {
+  
+  const validateForm = () => {
+    if (!formData.fullName.trim()) return toast.error("Full name is required");
+    if (!formData.email.trim()) return toast.error("Email is required");
+    if (!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email format");
+    if (!formData.password) return toast.error("Password is required");
+    if (formData.password.length < 6) return toast.error("Password must be at least 6 characters");
+
+    return true;
+  };
+  const handleSubmit = (e) => {
+    const success = validateForm();
+    if(success == true) {
+      signup(formData);
+    }
+    
     e.preventDefault();
   };
   return (
@@ -34,113 +50,91 @@ function SignUpPage() {
               </p>
             </div>
           </div>
-          <form onSubmit={handelSubmit} className="space-y-1 flex-col">
-           
-            <label className="input validator">
-              <svg
-                className="h-[1em] opacity-50"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-              >
-                <g
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  strokeWidth="2.5"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </g>
-              </svg>
-              <input
-                type="text"
-                required
-                placeholder="Username"
-                pattern="[A-Za-z][A-Za-z0-9\-]*"
-                minlength="3"
-                maxlength="30"
-                title="Only letters, numbers or dash"
-                value={formData.name}
-                onChange={(e)=>setformData({...formData,name:e.target.value})}
-              />
-            </label>
-            <p className="validator-hint">
-              Must be 3 to 30 characters
-              <br />
-              containing only letters, numbers or dash
-            </p>
-          
-            <div className="space-y-1">
-            <label className="input validator">
-              <svg
-                className="h-[1em] opacity-50"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-              >
-                <g
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  strokeWidth="2.5"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                </g>
-              </svg>
-              <input type="email" placeholder="mail@site.com"
-               value={formData.email}
-                onChange={(e)=>setformData({...formData,email:e.target.value})} required />
-            </label>
-            <div className="validator-hint hidden">
-              Enter valid email address
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium">Full Name</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <User className="size-5 text-base-content/40" />
+                </div>
+                <input
+                  type="text"
+                  className={`input input-bordered w-full pl-10`}
+                  placeholder="Username"
+                  value={formData.name}
+                  onChange={(e) => setformData({ ...formData, name: e.target.value })}
+                />
+              </div>
             </div>
-            
-            <label className="input validator">
-              <svg
-                className="h-[1em] opacity-50"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-              >
-                <g
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  strokeWidth="2.5"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
-                  <circle
-                    cx="16.5"
-                    cy="7.5"
-                    r=".5"
-                    fill="currentColor"
-                  ></circle>
-                </g>
-              </svg>
-              <input
-                type="password"
-                required
-                placeholder="Password"
-                minlength="8"
-                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
-                 value={formData.password}
-                onChange={(e)=>setformData({...formData,password:e.target.value})}
-              />
-            </label>
-            <p className="validator-hint hidden">
-              Must be more than 8 characters, including
-              <br />
-              At least one number <br />
-              At least one lowercase letter <br />
-              At least one uppercase letter
-            </p>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium">Email</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="size-5 text-base-content/40" />
+                </div>
+                <input
+                  type="email"
+                  className={`input input-bordered w-full pl-10`}
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={(e) => setformData({ ...formData, email: e.target.value })}
+                />
+              </div>
             </div>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium">Password</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="size-5 text-base-content/40" />
+                </div>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className={`input input-bordered w-full pl-10`}
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={(e) => setformData({ ...formData, password: e.target.value })}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setshowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="size-5 text-base-content/40" />
+                  ) : (
+                    <Eye className="size-5 text-base-content/40" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" className="btn btn-primary w-full" disabled={isSigningUp}>
+              {isSigningUp ? (
+                <>
+                  <Loader2 className="size-5 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                "Create Account"
+              )}
+            </button>
           </form>
+          <div className="text-center">
+            <p className="text-base-content/60">Already have an account? {''}
+              <Link className="link link-primary" to={'/login'}>Sign In</Link>
+            </p>
+          </div>
         </div>
       </div>
+      <Pattern  title={'talk with friends'} subtitle={'Join our community'}></Pattern>
     </div>
   );
 }
