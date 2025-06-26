@@ -65,5 +65,8 @@ export const useAuthStore = create((stat) => ({
     } catch (error) {
        toast.error('Account Logout failed',error.response.data.message);
     }
+  },
+  updateprofile:async () => {
+    
   }
 }));
