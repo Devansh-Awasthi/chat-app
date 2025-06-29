@@ -30,5 +30,6 @@ export const useMessageStore = create((stat) => ({
     } finally {
       stat({ isMessageLoading: false });
     }
-  }
+  },
+  setSelectedUser : (selectedUser)=>{stat({selectedUser})}
 }));
