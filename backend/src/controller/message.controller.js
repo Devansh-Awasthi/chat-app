@@ -4,7 +4,7 @@ import cloudinary from "../lib/cloudinary.js";
 export const getUserForSidebar = async(req,res) =>{
  try {
     const loggedInUser = req.user._id;
-    const filteredUser = User.find({_id:{$ne:loggedInUser}}).select("-password");
+    const filteredUser =await User.find({_id:{$ne:loggedInUser}}).select("-password");
     res.status(200).json(filteredUser)
  } catch (error) {
       console.log('Internal sever Error in getUserForSidebar:', error);
