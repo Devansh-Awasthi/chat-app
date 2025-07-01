@@ -4,7 +4,7 @@ import ChatInput from './ChatInput'
 
 function UserChat() {
   return (
-    <div>
+    <div className='flex overflow-auto flex-col flex-1'>
       <ChatHeader/>
       <p>messages</p>
       <ChatInput/>
