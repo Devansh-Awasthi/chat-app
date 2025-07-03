@@ -8,7 +8,7 @@ function ChatInput() {
   const { sendMessage } = useMessageStore();
   const fileRef = useRef(null);
   const handleImageChange = (e) => {
-  const file = e.target.files[0];
+    const file = e.target.files[0];
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
       return;
@@ -24,7 +24,7 @@ function ChatInput() {
     setPreview(null);
     if (fileRef.current) fileRef.current.value = "";
   };
-  const handelSendMessage = async(e) => {
+  const handelSendMessage = async (e) => {
     e.preventDefault();
     if (!Text.trim() && !Preview) return;
 
@@ -33,8 +33,6 @@ function ChatInput() {
         text: Text.trim(),
         image: Preview,
       });
-
-      // Clear form
       setText("");
       setPreview(null);
       if (fileRef.current) fileRef.current.value = "";
@@ -45,11 +43,11 @@ function ChatInput() {
 
   return (
     <div className="w-full p-4 ">
-      {
+      {Preview && (
         <div className="flex items-center mb-3">
           <div className="relative">
             <img
-              src={Preview || "/avatar.png"}
+              src={Preview}
               className="size-20 rounded-lg object-cover border border-zinc-700"
             ></img>
             <button
@@ -61,17 +59,17 @@ function ChatInput() {
             </button>
           </div>
         </div>
-      }
+      )}
       <form onSubmit={handelSendMessage} className="flex  items-center ">
         <div className="flex flex-1 gap-2">
-      <input
+          <input
             type="text"
             className="w-full input input-bordered rounded-lg input-sm sm:input-md"
             placeholder="Type a message..."
             value={Text}
             onChange={(e) => setText(e.target.value)}
           />
- <input
+          <input
             type="file"
             accept="image/*"
             className="hidden"
@@ -89,7 +87,7 @@ function ChatInput() {
           </button>
         </div>
 
- <button
+        <button
           type="submit"
           className="btn btn-sm btn-circle flex items-center justify-center"
           disabled={!Text.trim() && !Preview}
@@ -97,7 +95,6 @@ function ChatInput() {
           <Send size={22} />
         </button>
       </form>
-      
     </div>
   );
 }
